@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sre-ai-agent
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sre-ai-agent
+  template:
+    metadata:
+      labels:
+        app: sre-ai-agent
+    spec:
+      # Tell the Pod to use the ServiceAccount with its permissions
+      serviceAccountName: sre-agent-sa
+      automountServiceAccountToken: true
+      containers:
+      - name: agent-container
+        # Use your ECR URI here:
+        image: 123.dkr.ecr.us-east-1.amazonaws.com/sre-agent:latest
+        imagePullPolicy: Always
+        # Pass the OpenAI Key from the Secret into an environment variable
+        env:
+        - name: OPENAI_API_KEY
+          value: "YOUR API KEY"
+
+        - name: ALERT_EMAIL_FROM
+          value: "xyz@gmail.com"
+
+        - name: ALERT_EMAIL_PASS
+          value: ""
+
+        - name: ALERT_EMAIL_TO
+          value: "recipients"
+
+            #secretKeyRef:
+              #name: openai-key # Name of the Secret we created
+              #key: api-key    # Key within the Secret
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
