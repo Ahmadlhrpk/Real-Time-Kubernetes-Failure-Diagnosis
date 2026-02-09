@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crash-test
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crash-test
+  template:
+    metadata:
+      labels:
+        app: crash-test
+    spec:
+      containers:
+      - name: crash-container
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "This container will crash now for testing";
+            sleep 2;
+            exit 1
